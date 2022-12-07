@@ -128,12 +128,12 @@ def show_all() -> str:
 def search(*args) -> str:
     """Функія реалізовує пошук даних у книзі контактів"""
     result = []
-    search_text = args[0]
+    search_text = str(args[0]).lower()
     for el in CONTACTS.iterator(5):
         for name, data in el.items():
             numbers = ", ".join(phone.value for phone in data.phones)
-            if str(name).lower().find(search_text) > 0 or\
-                    numbers.find(search_text) > 0:
+            if str(name).lower().find(search_text) >= 0 or\
+                    numbers.find(search_text) >= 0:
                 if data.birthday.value:
                     bday = data.birthday.value.date().strftime('%d-%m-%Y')
                     to_birthday = CONTACTS[name].days_to_birthday()
@@ -153,6 +153,7 @@ def hlp(*args) -> str:
             f'change -- change specified number for contact\n'
             f'phone --  show phone numbers for specified contact\n'
             f'show all -- show all contacts\n'
+            f'search -- search contacts by letters in name or digits in number\n'
             f'delete -- delete specified number from contact\n'
             f'good bye, close, exit -- shutdown application')
 
