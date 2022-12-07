@@ -1,7 +1,6 @@
 from classes import AddressBook
 from classes import Record
 import pickle
-import os
 
 CONTACTS = AddressBook()
 FILENAME = 'contacts.data'
@@ -25,11 +24,11 @@ def input_error(func):
 
 def loader() -> None:
     """Функція завантажує дані з файлу, якщо він існує"""
-    if os.path.exists(FILENAME):
+    try:
         with open(FILENAME, "rb") as file:
             global CONTACTS
             CONTACTS = pickle.load(file)
-    else:
+    except:
         saver()
 
 
