@@ -66,7 +66,10 @@ class Birthday(Field):
     def check_date(cls, birthday):
         """Метод для валідації синтаксису дати народження"""
         try:
-            return datetime.datetime.strptime(birthday, '%d-%m-%Y')
+            if birthday:
+                return datetime.datetime.strptime(birthday, '%d-%m-%Y')
+            else:
+                return None
         except ValueError:
             print('Incorrect date format, should be DD-MM-YYYY')
 

@@ -56,13 +56,17 @@ def search() -> None:
     pass
 
 
-@input_error
+# @input_error
 def add(name, number, birthday=None) -> str:
     """Функція для додавання нового запису або додавання нового телефону контакту"""
 
     if name not in CONTACTS:
-        new_number = Record(name, number, birthday)
-        CONTACTS.add_record(new_number)
+        if birthday:
+            new_number = Record(name, number, birthday)
+            CONTACTS.add_record(new_number)
+        else:
+            new_number = Record(name, number)
+            CONTACTS.add_record(new_number)
         saver()
         return f'Contact add successfully'
     else:
