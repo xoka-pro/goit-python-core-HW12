@@ -49,7 +49,7 @@ class Phone(Field):
     @classmethod
     def check_phone(cls, phone):
         """Метод для валідації синтаксису номера телефона"""
-        phone_format =  = r"\([0-9]{3}\)[0-9]{3}-[0-9]{2}-[0-9]{2}"
+        phone_format = r"\([0-9]{3}\)[0-9]{3}-[0-9]{2}-[0-9]{2}"
         if len(re.findall(phone_format, phone)) == 0:
             raise ValueError('Incorrect phone format, should be (XXX)AAA-BB-CC')
         return phone

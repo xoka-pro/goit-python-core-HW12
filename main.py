@@ -1,7 +1,10 @@
 from classes import AddressBook
 from classes import Record
+import pickle
+import os
 
 CONTACTS = AddressBook()
+FILENAME = 'contacts.data'
 
 
 def input_error(func):
@@ -20,8 +23,25 @@ def input_error(func):
     return wrapper
 
 
+def loader() -> None:
+    """Функція завантажує дані з файлу, якщо він існує"""
+    if os.path.exists(FILENAME):
+        with open(FILENAME, "rb") as file:
+            global CONTACTS
+            CONTACTS = pickle.load(file)
+    else:
+        saver()
+
+
+def saver() -> None:
+    """Функція зберігає дані у файл"""
+    with open(FILENAME, "wb") as file:
+        pickle.dump(CONTACTS, file)
+
+
 def hello() -> str:
     """Функція для вітання користувача"""
+    loader()
     return (f'How can I help you?\n'
             f'Type "h" or "help" to show help')
 
@@ -32,6 +52,11 @@ def goodbye():
     quit()
 
 
+def search() -> None:
+    """Функія реалізовує пошук даних у книзі контактів"""
+    pass
+
+
 @input_error
 def add(name, number, birthday=None) -> str:
     """Функція для додавання нового запису або додавання нового телефону контакту"""
@@ -39,9 +64,11 @@ def add(name, number, birthday=None) -> str:
     if name not in CONTACTS:
         new_number = Record(name, number, birthday)
         CONTACTS.add_record(new_number)
+        saver()
         return f'Contact add successfully'
     else:
         CONTACTS[name].add_phone(number)
+        saver()
         return f'New number added to {name}'
 
 
@@ -52,6 +79,7 @@ def change(*args) -> str:
     name, old_number, new_number, *_ = args
     if name in CONTACTS:
         CONTACTS[name].change_phone(old_number, new_number)
+        saver()
     else:
         return f'No contact "{name}"'
     return f'Contact change successfully'
@@ -63,6 +91,7 @@ def del_phone(name, phone) -> str:
 
     if name in CONTACTS:
         CONTACTS[name].del_phone(phone)
+        saver()
     else:
         return f'No contact "{name}"'
     return f'Phone number deleted successfully'
