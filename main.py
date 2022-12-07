@@ -1,7 +1,7 @@
 from classes import AddressBook
 from classes import Record
 
-contacts = AddressBook()
+CONTACTS = AddressBook()
 
 
 def input_error(func):
@@ -36,12 +36,12 @@ def goodbye():
 def add(name, number, birthday=None) -> str:
     """Функція для додавання нового запису або додавання нового телефону контакту"""
 
-    if name not in contacts:
+    if name not in CONTACTS:
         new_number = Record(name, number, birthday)
-        contacts.add_record(new_number)
+        CONTACTS.add_record(new_number)
         return f'Contact add successfully'
     else:
-        contacts[name].add_phone(number)
+        CONTACTS[name].add_phone(number)
         return f'New number added to {name}'
 
 
@@ -50,8 +50,8 @@ def change(*args) -> str:
     """Функція для заміни номеру телефона контакту"""
 
     name, old_number, new_number, *_ = args
-    if name in contacts:
-        contacts[name].change_phone(old_number, new_number)
+    if name in CONTACTS:
+        CONTACTS[name].change_phone(old_number, new_number)
     else:
         return f'No contact "{name}"'
     return f'Contact change successfully'
@@ -61,8 +61,8 @@ def change(*args) -> str:
 def del_phone(name, phone) -> str:
     """Функція видалення номера телефона у контакту"""
 
-    if name in contacts:
-        contacts[name].del_phone(phone)
+    if name in CONTACTS:
+        CONTACTS[name].del_phone(phone)
     else:
         return f'No contact "{name}"'
     return f'Phone number deleted successfully'
@@ -74,7 +74,7 @@ def phone_func(*args) -> str:
 
     name = args[0]
 
-    for el in contacts.iterator(5):
+    for el in CONTACTS.iterator(5):
         for key, data in el.items():
             if key == name:
                 return f'Name: {key} | Numbers: {", ".join(phone.value for phone in data.phones)}'
@@ -87,12 +87,12 @@ def show_all() -> str:
     """Повертає всю книгу контактів"""
 
     result = []
-    for el in contacts.iterator(5):
+    for el in CONTACTS.iterator(5):
         for name, data in el.items():
             numbers = ", ".join(phone.value for phone in data.phones)
             if data.birthday.value:
                 bday = data.birthday.value.date().strftime('%d-%m-%Y')
-                to_birthday = contacts[name].days_to_birthday()
+                to_birthday = CONTACTS[name].days_to_birthday()
                 result.append(f'Name: {name} | Numbers: {numbers} | Birthday: {bday} - {to_birthday}')
             else:
                 result.append(f'Name: {name} | Numbers: {numbers}')
