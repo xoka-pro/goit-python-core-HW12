@@ -3,7 +3,7 @@ from classes import Record
 import pickle
 
 CONTACTS = AddressBook()
-FILENAME = 'contacts.data'
+FILENAME = 'contacts.dat'
 
 
 def input_error(func):
@@ -23,7 +23,7 @@ def input_error(func):
 
 
 def loader() -> None:
-    """Функція завантажує дані з файлу, якщо він існує"""
+    """Функція завантажує дані з файлу, якщо він існує, а якщо не існує - створює файл"""
     try:
         with open(FILENAME, "rb") as file:
             global CONTACTS
