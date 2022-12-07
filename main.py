@@ -56,7 +56,7 @@ def search() -> None:
     pass
 
 
-# @input_error
+@input_error
 def add(name, number, birthday=None) -> str:
     """Функція для додавання нового запису або додавання нового телефону контакту"""
 
