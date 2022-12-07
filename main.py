@@ -51,11 +51,6 @@ def goodbye():
     quit()
 
 
-def search() -> None:
-    """Функія реалізовує пошук даних у книзі контактів"""
-    pass
-
-
 @input_error
 def add(name, number, birthday=None) -> str:
     """Функція для додавання нового запису або додавання нового телефону контакту"""
@@ -129,6 +124,27 @@ def show_all() -> str:
     return '\n'.join(result)
 
 
+@input_error
+def search(*args) -> str:
+    """Функія реалізовує пошук даних у книзі контактів"""
+    result = []
+    search_text = args[0]
+    for el in CONTACTS.iterator(5):
+        for name, data in el.items():
+            numbers = ", ".join(phone.value for phone in data.phones)
+            if str(name).lower().find(search_text) > 0 or\
+                    numbers.find(search_text) > 0:
+                if data.birthday.value:
+                    bday = data.birthday.value.date().strftime('%d-%m-%Y')
+                    to_birthday = CONTACTS[name].days_to_birthday()
+                    result.append(f'Name: {name} | Numbers: {numbers} | Birthday: {bday} - {to_birthday}')
+                else:
+                    result.append(f'Name: {name} | Numbers: {numbers}')
+    if len(result) < 1:
+        return f'No results'
+    return '\n'.join(result)
+
+
 def hlp(*args) -> str:
     """Повертає коротку допомогу по командах"""
     return (f'Known commands:\n'
@@ -158,6 +174,7 @@ def parser(msg: str):
         'close': goodbye,
         'exit': goodbye,
         'delete': del_phone,
+        'search': search,
     }
 
     for key in operations:
