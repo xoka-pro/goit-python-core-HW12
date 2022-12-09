@@ -1,9 +1,6 @@
-from classes import AddressBook
-from classes import Record
-import pickle
+from classes import AddressBook, Record
 
 CONTACTS = AddressBook()
-FILENAME = 'contacts.dat'
 
 
 def input_error(func):
@@ -22,25 +19,9 @@ def input_error(func):
     return wrapper
 
 
-def loader() -> None:
-    """Функція завантажує дані з файлу, якщо він існує, а якщо не існує - створює файл"""
-    try:
-        with open(FILENAME, "rb") as file:
-            global CONTACTS
-            CONTACTS = pickle.load(file)
-    except:
-        saver()
-
-
-def saver() -> None:
-    """Функція зберігає дані у файл"""
-    with open(FILENAME, "wb") as file:
-        pickle.dump(CONTACTS, file)
-
-
 def hello() -> str:
     """Функція для вітання користувача"""
-    loader()
+    CONTACTS.loader()
     return (f'How can I help you?\n'
             f'Type "h" or "help" to show help')
 
@@ -58,11 +39,11 @@ def add(name, number, birthday=None) -> str:
     if name not in CONTACTS:
         new_number = Record(name, number, birthday)
         CONTACTS.add_record(new_number)
-        saver()
+        CONTACTS.saver()
         return f'Contact add successfully'
     else:
         CONTACTS[name].add_phone(number)
-        saver()
+        CONTACTS.saver()
         return f'New number added to {name}'
 
 
@@ -73,7 +54,7 @@ def change(*args) -> str:
     name, old_number, new_number, *_ = args
     if name in CONTACTS:
         CONTACTS[name].change_phone(old_number, new_number)
-        saver()
+        CONTACTS.saver()
     else:
         return f'No contact "{name}"'
     return f'Contact change successfully'
@@ -85,24 +66,26 @@ def del_phone(name, phone) -> str:
 
     if name in CONTACTS:
         CONTACTS[name].del_phone(phone)
-        saver()
+        CONTACTS.saver()
     else:
         return f'No contact "{name}"'
     return f'Phone number deleted successfully'
 
 
-# @input_error
+@input_error
 def phone_func(*args) -> str:
     """Повертає номер телефону для зазначеного контакту"""
 
-    name = args[0]
-
+    find_phone = args[0]
+    result = []
     for el in CONTACTS.iterator(5):
-        for key, data in el.items():
-            if key == name:
-                return f'Name: {key} | Numbers: {", ".join(phone.value for phone in data.phones)}'
-            else:
-                return f'No contact "{name}"'
+        for name, data in el.items():
+            if name == find_phone:
+                result.append(f'Name: {name} | Numbers: {", ".join(phone.value for phone in data.phones)}')
+
+    if len(result) < 1:
+        return f'No contact {find_phone}'
+    return '\n'.join(result)
 
 
 @input_error
@@ -113,7 +96,7 @@ def show_all() -> str:
     for el in CONTACTS.iterator(5):
         for name, data in el.items():
             numbers = ", ".join(phone.value for phone in data.phones)
-            if data.birthday.value:
+            if hasattr(data, 'birthday'):
                 bday = data.birthday.value.date().strftime('%d-%m-%Y')
                 to_birthday = CONTACTS[name].days_to_birthday()
                 result.append(f'Name: {name} | Numbers: {numbers} | Birthday: {bday} - {to_birthday}')
@@ -134,7 +117,7 @@ def search(*args) -> str:
             numbers = ", ".join(phone.value for phone in data.phones)
             if str(name).lower().find(search_text) >= 0 or\
                     numbers.find(search_text) >= 0:
-                if data.birthday.value:
+                if hasattr(data, 'birthday'):
                     bday = data.birthday.value.date().strftime('%d-%m-%Y')
                     to_birthday = CONTACTS[name].days_to_birthday()
                     result.append(f'Name: {name} | Numbers: {numbers} | Birthday: {bday} - {to_birthday}')

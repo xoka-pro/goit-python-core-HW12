@@ -1,6 +1,9 @@
 from collections import UserDict
 import datetime
 import re
+import pickle
+
+FILENAME = 'contacts.dat'
 
 
 class AddressBook(UserDict):
@@ -21,6 +24,19 @@ class AddressBook(UserDict):
     def __iter__(self):
         for key, value in self.data.items():
             yield key, value
+
+    def loader(self) -> None:
+        """Функція завантажує дані з файлу, якщо він існує"""
+        try:
+            with open(FILENAME, "rb") as file:
+                self.data = pickle.load(file)
+        except FileNotFoundError:
+            pass
+
+    def saver(self) -> None:
+        """Функція зберігає дані у файл"""
+        with open(FILENAME, "wb") as file:
+            pickle.dump(self.data, file)
 
 
 class Field:
@@ -65,13 +81,13 @@ class Birthday(Field):
     @classmethod
     def check_date(cls, birthday):
         """Метод для валідації синтаксису дати народження"""
-        try:
-            if birthday:
+        if birthday:
+            try:
                 return datetime.datetime.strptime(birthday, '%d-%m-%Y')
-            else:
-                return None
-        except ValueError:
-            print('Incorrect date format, should be DD-MM-YYYY')
+            except ValueError:
+                print('Incorrect date format, should be DD-MM-YYYY')
+        else:
+            return None
 
     @Field.value.setter
     def value(self, value):
@@ -84,14 +100,10 @@ class Record:
 
     def __init__(self, name, phone=None, birthday=None):
         self.name = Name(name)
-        self.birthday = Birthday(birthday)
-
-        if phone:
-            self.phones = [Phone(phone)]
-        else:
-            self.phones = []
+        self.phones = [Phone(phone)] if phone else []
 
         if birthday:
+            self.birthday = Birthday(birthday)
             self.birthday.value = birthday
 
     def add_phone(self, phone):
