@@ -104,7 +104,6 @@ class Record:
 
         if birthday:
             self.birthday = Birthday(birthday)
-            self.birthday.value = birthday
 
     def add_phone(self, phone):
         self.phones.append(Phone(phone))
